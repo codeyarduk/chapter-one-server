@@ -56,7 +56,8 @@ async function getReview(text) {
           text,
       },
     ],
-    model: "gpt-4-turbo-preview",
+    model: "gpt-3.5-turbo-0125",
+    stream: true,
   });
   // .then((data) => console.log(data.choices[0].message.content));
   return chatCompletion.choices[0].message.content;
