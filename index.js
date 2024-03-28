@@ -5,7 +5,6 @@ const app = express();
 const cors = require("cors");
 const fs = require("fs");
 
-// dotenv.config();
 app.use(cors());
 app.use(express.json());
 const OpenAI = require("openai");
@@ -61,17 +60,10 @@ async function getReview(text, res) {
     stream: true,
   });
   for await (const chunk of chatCompletion) {
-    // myOutPut = myOutPut + (chunk.choices[0]?.message?.content || "");
-
-    // process.stdout.write(chunk.choices[0]?.delta?.content || "");
-    console.log(chunk.choices[0]?.delta?.content || "")
+    console.log(chunk.choices[0]?.delta?.content || "");
     res.write(chunk.choices[0]?.delta?.content || "");
   }
   res.end();
-  // .then((data) => console.log(data.choices[0].message.content));
-  //   return chatCompletion.choices[0].message.content;
-
-  //   console.log(chatCompletion);
 }
 
 const port = process.env.PORT || 3000;
