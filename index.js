@@ -32,9 +32,10 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   console.log(req.file);
   const filePath = "uploads/" + req.file.filename;
   const text = await pdf2html.text("uploads/" + req.file.filename);
-  const review = await getReview(text);
+  //   const review = await getReview(text);
+  await getReview(text, res);
   //   console.log(text);
-  res.send(review);
+  //   res.send(review);
 
   // Delete file after sending response
   fs.unlink(filePath, (err) => {
@@ -46,7 +47,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   });
 });
 
-async function getReview(text) {
+async function getReview(text, res) {
   const chatCompletion = await openai.chat.completions.create({
     messages: [
       {
@@ -59,8 +60,16 @@ async function getReview(text) {
     model: "gpt-3.5-turbo-0125",
     stream: true,
   });
+  for await (const chunk of chatCompletion) {
+    // myOutPut = myOutPut + (chunk.choices[0]?.message?.content || "");
+
+    // process.stdout.write(chunk.choices[0]?.delta?.content || "");
+    console.log(chunk.choices[0]?.delta?.content || "")
+    res.write(chunk.choices[0]?.delta?.content || "");
+  }
+  res.end();
   // .then((data) => console.log(data.choices[0].message.content));
-  return chatCompletion.choices[0].message.content;
+  //   return chatCompletion.choices[0].message.content;
 
   //   console.log(chatCompletion);
 }
