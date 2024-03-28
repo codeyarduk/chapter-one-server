@@ -3,6 +3,8 @@ const multer = require("multer");
 const path = require("path");
 const app = express();
 const cors = require("cors");
+const fs = require("fs");
+
 // dotenv.config();
 app.use(cors());
 app.use(express.json());
@@ -28,10 +30,20 @@ const upload = multer({ storage: storage });
 
 app.post("/upload", upload.single("file"), async (req, res) => {
   console.log(req.file);
+  const filePath = "uploads/" + req.file.filename;
   const text = await pdf2html.text("uploads/" + req.file.filename);
   const review = await getReview(text);
   //   console.log(text);
   res.send(review);
+
+  // Delete file after sending response
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.error("Error deleting file:", err);
+    } else {
+      console.log("File deleted:", filePath);
+    }
+  });
 });
 
 async function getReview(text) {
