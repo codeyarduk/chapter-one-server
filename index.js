@@ -11,7 +11,7 @@ const OpenAI = require("openai");
 const pdf2html = require("pdf2html");
 const { get } = require("http");
 
-const openai = new OpenAI(process.env.OPENAI_API_KEY);
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY});
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -52,11 +52,11 @@ async function getReview(text, res) {
       {
         role: "user",
         content:
-          "Please analyse my resume and give me feedback on where i can improve it, I am applying for a corporate finance role, address me by my first name, and sign the email off from CodeYard" +
+          "Please analyse my resume and give me feedback on where i can improve it, I am applying for a software development role at a local startup, address me by my first name, and sign the email off from CodeYard" +
           text,
       },
     ],
-    model: "gpt-3.5-turbo-0125",
+    model: "gpt-4-0125-preview",
     stream: true,
   });
   for await (const chunk of chatCompletion) {
