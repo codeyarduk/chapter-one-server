@@ -11,11 +11,11 @@ const OpenAI = require("openai");
 const pdf2html = require("pdf2html");
 const { get } = require("http");
 
-const requestRouter = require("./routes/googleRequest");
-const oauthRouter = require("./routes/oauth");
 
-app.use("/request", requestRouter);
-app.use("/oauth", oauthRouter);
+
+
+
+
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY});
 
