@@ -6,6 +6,8 @@ const cors = require("cors");
 const fs = require("fs");
 const users = require("./routes/users");
 const mongoose = require("mongoose");
+const payments = require("./routes/payments");
+const session = require("express-session");
 
 mongoose
   .connect("mongodb://localhost:27017/chapter-one", {
@@ -15,9 +17,18 @@ mongoose
   .then(() => console.log("Connected to MongoDB..."))
   .catch((err) => console.log(err));
 
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true },
+  })
+);
 app.use(cors());
 app.use(express.json());
 app.use("/api/users", users);
+app.use("/api/payments", payments);
 
 const OpenAI = require("openai");
 const pdf2html = require("pdf2html");
