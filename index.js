@@ -8,11 +8,14 @@ const users = require("./routes/users");
 const mongoose = require("mongoose");
 const payments = require("./routes/payments");
 const session = require("express-session");
+// "mongodb://localhost:27017/chapter-one"
+const verifyGoogleToken = require("./middleware/auth");
 
 mongoose
-  .connect("mongodb://localhost:27017/chapter-one", {
+  .connect(process.env.MONGO_CONNECTION_STRING, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    // dnsSeedlist: false,
   })
   .then(() => console.log("Connected to MongoDB..."))
   .catch((err) => console.log(err));
@@ -50,24 +53,31 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.post("/upload", upload.single("file"), async (req, res) => {
-  console.log(req.file);
-  const filePath = "uploads/" + req.file.filename;
-  const text = await pdf2html.text("uploads/" + req.file.filename);
-  //   const review = await getReview(text);
-  await getReview(text, res);
-  //   console.log(text);
-  //   res.send(review);
+app.post(
+  "/upload",
+  verifyGoogleToken,
+  upload.single("file"),
+  async (req, res) => {
+    // console.log(req.headers.authorization);
 
-  // Delete file after sending response
-  fs.unlink(filePath, (err) => {
-    if (err) {
-      console.error("Error deleting file:", err);
-    } else {
-      console.log("File deleted:", filePath);
-    }
-  });
-});
+    console.log(req.file);
+    const filePath = "uploads/" + req.file.filename;
+    const text = await pdf2html.text("uploads/" + req.file.filename);
+    //   const review = await getReview(text);
+    await getReview(text, res);
+    //   console.log(text);
+    //   res.send(review);
+
+    // Delete file after sending response
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File deleted:", filePath);
+      }
+    });
+  }
+);
 
 async function getReview(text, res) {
   const chatCompletion = await openai.chat.completions.create({
@@ -79,7 +89,7 @@ async function getReview(text, res) {
           text,
       },
     ],
-    model: "gpt-4-0125-preview",
+    model: "gpt-3.5-turbo-0125",
     stream: true,
   });
   for await (const chunk of chatCompletion) {

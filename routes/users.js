@@ -2,13 +2,14 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const { OAuth2Client } = require("google-auth-library");
-const client = new OAuth2Client(process.env.CLIENT_ID);
+const client = new OAuth2Client(process.env.GOOGLE_OAUTH_CLIENT_ID);
 const jwtDecode = require("jwt-decode");
 const session = require("express-session");
 
 const userSchema = new mongoose.Schema(
   {
     name: String,
+    lastName: String,
     email: String,
     uses: Number,
   },
@@ -52,7 +53,8 @@ router.post("/register", async (req, res) => {
     }
     // req.session.userId = user.id;
     let user = new User({
-      name: resData.name,
+      name: resData.given_name,
+      lastName: resData.family_name,
       email: resData.email,
       uses: 0,
       //   tokens: [{ token: token }],
@@ -105,7 +107,12 @@ router.post("/login", async (req, res) => {
     // ww
 
     // console.log(req.session.userId);
-    res.send("Login verified");
+    res.send({
+      name: existingUser.name,
+      lastName: existingUser.lastName,
+      email: existingUser.email,
+      uses: existingUser.uses,
+    });
   } catch (error) {
     console.error("Error verifying token:", error);
     res.status(401).send("Unauthorized");
