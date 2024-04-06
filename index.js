@@ -11,6 +11,12 @@ const session = require("express-session");
 const webhooks = require("./routes/webhooks");
 // "mongodb://localhost:27017/chapter-one"
 const verifyGoogleToken = require("./middleware/auth");
+const https = require("https");
+
+const options = {
+  key: fs.readFileSync("path/to/private/key"),
+  cert: fs.readFileSync("path/to/certificate"),
+};
 
 mongoose
   .connect(process.env.MONGO_CONNECTION_STRING, {
