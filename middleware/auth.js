@@ -5,12 +5,6 @@ const client = new OAuth2Client(
   "886756526696-8pc6lu70409d3uu0jvfkojk02kjoak7t.apps.googleusercontent.com"
 );
 
-// const ticket = await client.verifyIdToken({
-//     idToken: token,
-//     audience:
-//       "886756526696-8pc6lu70409d3uu0jvfkojk02kjoak7t.apps.googleusercontent.com", // Specify the CLIENT_ID of the app that accesses the backend
-//   });
-
 async function verifyGoogleToken(req, res, next) {
   const authHeader = req.headers.authorization;
 
@@ -30,7 +24,7 @@ async function verifyGoogleToken(req, res, next) {
     req.userId = ticket.getPayload().sub;
     next();
   } catch (err) {
-    res.status(401).send('Unauthorized');
+    res.status(401).send("Unauthorized");
   }
 }
 

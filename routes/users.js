@@ -6,6 +6,7 @@ const client = new OAuth2Client(process.env.GOOGLE_OAUTH_CLIENT_ID);
 const jwtDecode = require("jwt-decode");
 const session = require("express-session");
 
+
 const userSchema = new mongoose.Schema(
   {
     name: String,
@@ -46,25 +47,16 @@ router.post("/register", async (req, res) => {
     const existingUser = await User.findOne({ email: resData.email });
     if (existingUser) {
       console.log(existingUser);
-      //   await User.updateOne({ _id: existingUser._id }, { $push: { tokens: { token: token } } });
       console.log("User with this email already exists");
-      //   res.cookie('session_token', token, { httpOnly: true, secure: true, sameSite: 'none' });
       return res.status(400).send("User with this email already exists");
     }
-    // req.session.userId = user.id;
     let user = new User({
       name: resData.given_name,
       lastName: resData.family_name,
       email: resData.email,
       uses: 0,
-      //   tokens: [{ token: token }],
     });
-
-    console.log(user);
     user = await user.save();
-    // ww
-
-    // console.log(req.session.userId);
     res.send("Login verified");
   } catch (error) {
     console.error("Error verifying token:", error);
@@ -73,13 +65,13 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  const token = req.body.user; // assuming you're sending the token in the request body
+  const token = req.body.user;
 
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience:
-        "886756526696-8pc6lu70409d3uu0jvfkojk02kjoak7t.apps.googleusercontent.com", // Specify the CLIENT_ID of the app that accesses the backend
+        "886756526696-8pc6lu70409d3uu0jvfkojk02kjoak7t.apps.googleusercontent.com",
     });
 
     const payload = ticket.getPayload();
@@ -94,19 +86,6 @@ router.post("/login", async (req, res) => {
       console.log("User with this email does not exist");
       return res.status(400).send("User with this email does not exist");
     }
-    // req.session.userId = user.id;
-    // let user = new User({
-    //   name: payload.name,
-    //   email: payload.email,
-    //   uses: 0,
-    //   //   tokens: [{ token: token }],
-    // });
-
-    // console.log(user);
-    // user = await user.save();
-    // ww
-
-    // console.log(req.session.userId);
     res.send({
       name: existingUser.name,
       lastName: existingUser.lastName,
@@ -127,4 +106,7 @@ router.delete("/:id", async (req, res) => {
   res.send(user);
 });
 
-module.exports = router;
+module.exports = {
+    User: mongoose.model("User", userSchema),
+    router: router
+} 
