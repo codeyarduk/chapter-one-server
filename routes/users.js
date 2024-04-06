@@ -48,7 +48,8 @@ router.post("/register", async (req, res) => {
     if (existingUser) {
       console.log(existingUser);
       console.log("User with this email already exists");
-      return res.status(400).send("User with this email already exists");
+
+      // return res.status(400).send("User with this email already exists");
     }
     let user = new User({
       name: resData.given_name,
@@ -58,6 +59,13 @@ router.post("/register", async (req, res) => {
       used: 0,
     });
     user = await user.save();
+    return res.send({
+      name: existingUser.name,
+      lastName: existingUser.lastName,
+      email: existingUser.email,
+      uses: existingUser.uses,
+      used: existingUser.used,
+    });
     res.send("Login verified");
   } catch (error) {
     console.error("Error verifying token:", error);
