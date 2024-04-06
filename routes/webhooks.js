@@ -36,8 +36,9 @@ router.post("/webhook", async (req, res) => {
     case "checkout.session.completed":
       console.log("User should be credited with 5 credits");
       try {
+        const email = event.data.object.metadata.email;
         const user = await User.findOne({
-          email: event.data.object.metadata.email,
+          email: email,
         });
         console.log("found one with email " + event.data.object.metadata.email);
 
