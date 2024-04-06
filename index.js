@@ -82,23 +82,43 @@ app.post(
 );
 
 async function getReview(text, res) {
-  const chatCompletion = await openai.chat.completions.create({
-    messages: [
-      {
-        role: "user",
-        content:
-          "Please analyse my resume and give me feedback on where i can improve it, I am applying for a software development role at a local startup, address me by my first name, and sign the email off from CodeYard" +
-          text,
-      },
-    ],
-    model: "gpt-3.5-turbo-0125",
-    stream: true,
-  });
-  for await (const chunk of chatCompletion) {
-    console.log(chunk.choices[0]?.delta?.content || "");
-    res.write(chunk.choices[0]?.delta?.content || "");
+  // const completion = await openai.chat.completions.create({
+  //   messages: [{ role: "user", content: "give me a response of 3 words ONLY" }],
+  //   model: "gpt-3.5-turbo",
+  // });
+
+  // console.log(completion.choices[0]);
+  // res.send(completion.choices[0].message.content);
+
+  let queries = {
+    ats_formatting:
+      "do you think that this is following standard formatting for ats? please make your response plain text ONLY" +
+      text,
+    query2: "say bye",
+    // ...
+  };
+
+  let responses = {};
+
+  for (let query in queries) {
+    try {
+      let result = await openai.chat.completions.create({
+        messages: [
+          {
+            role: "user",
+            content: queries[query],
+          },
+        ],
+        model: "gpt-3.5-turbo",
+      });
+      // console.log(result.choices[0]?.message);
+      responses[query] = result.choices[0]?.message.content || "";
+    } catch (error) {
+      console.error(`Error creating chat completion for ${query}:`, error);
+    }
   }
-  res.end();
+  console.log(responses);
+  res.send(responses);
 }
 
 const port = process.env.PORT || 3000;
