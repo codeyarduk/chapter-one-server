@@ -4,7 +4,9 @@ const router = express.Router();
 const cors = require("cors");
 const mongoose = require("mongoose");
 const endpointSecret =
-  "whsec_99d28ef427ed443f2a1f54cd68f5e5333d780ddae51fc5c83eab568f40c8775a";
+  // whsec_CtZQCK2VbZGB1AI0AOdVtNbp9I0nZui4
+
+  "whsec_CtZQCK2VbZGB1AI0AOdVtNbp9I0nZui4";
 
 const { User } = require("./users");
 
