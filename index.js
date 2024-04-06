@@ -8,6 +8,7 @@ const users = require("./routes/users");
 const mongoose = require("mongoose");
 const payments = require("./routes/payments");
 const session = require("express-session");
+const webhooks = require("./routes/webhooks");
 // "mongodb://localhost:27017/chapter-one"
 const verifyGoogleToken = require("./middleware/auth");
 
@@ -29,6 +30,7 @@ app.use(
   })
 );
 app.use(cors());
+app.use("/api/payments", webhooks);
 app.use(express.json());
 app.use("/api/users", users);
 app.use("/api/payments", payments);
