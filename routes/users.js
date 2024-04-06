@@ -6,13 +6,13 @@ const client = new OAuth2Client(process.env.GOOGLE_OAUTH_CLIENT_ID);
 const jwtDecode = require("jwt-decode");
 const session = require("express-session");
 
-
 const userSchema = new mongoose.Schema(
   {
     name: String,
     lastName: String,
     email: String,
     uses: Number,
+    used: Number,
   },
   { collection: "users" }
 );
@@ -55,6 +55,7 @@ router.post("/register", async (req, res) => {
       lastName: resData.family_name,
       email: resData.email,
       uses: 0,
+      used: 0,
     });
     user = await user.save();
     res.send("Login verified");
@@ -91,11 +92,62 @@ router.post("/login", async (req, res) => {
       lastName: existingUser.lastName,
       email: existingUser.email,
       uses: existingUser.uses,
+      used: existingUser.used,
     });
   } catch (error) {
     console.error("Error verifying token:", error);
     res.status(401).send("Unauthorized");
   }
+});
+
+router.post("/uses/:email", async (req, res) => {
+  const token = req.body.user;
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience:
+        "886756526696-8pc6lu70409d3uu0jvfkojk02kjoak7t.apps.googleusercontent.com",
+    });
+
+    const payload = ticket.getPayload();
+    const existingUser = await User.findOne({ email: payload.email });
+
+    if (payload.email !== req.params.email) {
+      return res.status(401).send("Unauthorized");
+    }
+    console.log(payload);
+
+    if (!existingUser) {
+      console.log("User with this email does not exist");
+      res.status(400).send("User with this email does not exist");
+    } else {
+      res.send({
+        name: existingUser.name,
+        lastName: existingUser.lastName,
+        email: existingUser.email,
+        uses: existingUser.uses,
+      });
+    }
+  } catch (error) {
+    console.error("Error verifying token:", error);
+    res.status(401).send("Unauthorized");
+  }
+
+  //   try {
+  //     const user = await User.findOne({ email: req.params.email });
+  //     if (!user) {
+  //       return res
+  //         .status(404)
+  //         .send("The user with the given email was not found.");
+  //     }
+  //     res.send({
+  //       uses: user.uses,
+  //     });
+  //   } catch (err) {
+  //     console.error(err);
+  //     res.status(500).send("Server Error");
+  //   }
 });
 
 router.delete("/:id", async (req, res) => {
@@ -107,6 +159,6 @@ router.delete("/:id", async (req, res) => {
 });
 
 module.exports = {
-    User: mongoose.model("User", userSchema),
-    router: router
-} 
+  User: mongoose.model("User", userSchema),
+  router: router,
+};
