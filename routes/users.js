@@ -116,12 +116,13 @@ router.post("/uses/:email", async (req, res) => {
     if (payload.email !== req.params.email) {
       return res.status(401).send("Unauthorized");
     }
-    console.log(payload);
+    // console.log(payload);
 
     if (!existingUser) {
       console.log("User with this email does not exist");
       res.status(400).send("User with this email does not exist");
     } else {
+      console.log(existingUser);
       res.send({
         name: existingUser.name,
         lastName: existingUser.lastName,
