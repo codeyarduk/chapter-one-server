@@ -65,12 +65,13 @@ router.post("/register", async (req, res) => {
       used: 0,
     });
     user = await user.save();
+    const newExistingUser = await User.findOne({ email: resData.email });
     res.send({
-      name: existingUser.name,
-      lastName: existingUser.lastName,
-      email: existingUser.email,
-      uses: existingUser.uses,
-      used: existingUser.used,
+      name: newExistingUser.name,
+      lastName: newExistingUser.lastName,
+      email: newExistingUser.email,
+      uses: newExistingUser.uses,
+      used: newExistingUser.used,
     });
     // res.send("Login verified");
   } catch (error) {
