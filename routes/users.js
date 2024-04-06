@@ -106,12 +106,14 @@ router.post("/login", async (req, res) => {
         used: 0,
       });
       user = await user.save();
+
+      let newExistingUser = await User.findOne({ email: payload.email });
       return res.send({
-        name: existingUser.name,
-        lastName: existingUser.lastName,
-        email: existingUser.email,
-        uses: existingUser.uses,
-        used: existingUser.used,
+        name: newExistingUser.name,
+        lastName: newExistingUser.lastName,
+        email: newExistingUser.email,
+        uses: newExistingUser.uses,
+        used: newExistingUser.used,
       });
       // console.log("User with this email does not exist");
       // return res.status(400).send("User with this email does not exist");
