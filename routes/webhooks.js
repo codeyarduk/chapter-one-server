@@ -45,13 +45,13 @@ router.post("/webhook", async (req, res) => {
         console.log("id is " + id);
 
         if (user && id === "1") {
-          await User.updateOne({ $inc: { uses: 1 } });
+          await User.updateOne({ email: email }, { $inc: { uses: 1 } });
         }
         if (user && id === "2") {
-          await User.updateOne({ $inc: { uses: 5 } });
+          await User.updateOne({ email: email }, { $inc: { uses: 5 } });
         }
         if (user && id === "3") {
-          await User.updateOne({ $inc: { uses: 15 } });
+          await User.updateOne({ email: email }, { $inc: { uses: 15 } });
         }
 
         // Continue processing here
