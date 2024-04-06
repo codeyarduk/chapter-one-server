@@ -14,14 +14,14 @@ const verifyGoogleToken = require("./middleware/auth");
 const https = require("https");
 
 const options = {
-  key: fs.readFileSync("path/to/private/key"),
-  cert: fs.readFileSync("path/to/certificate"),
+  key: fs.readFileSync("./secret/chapteroneai.com.key"),
+  cert: fs.readFileSync("./secret/chapteroneai.com.pem"),
 };
 
 mongoose
   .connect(process.env.MONGO_CONNECTION_STRING, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+    // useNewUrlParser: true,
+    // useUnifiedTopology: true,
     // dnsSeedlist: false,
   })
   .then(() => console.log("Connected to MongoDB..."))
@@ -127,5 +127,7 @@ async function getReview(text, res) {
   res.send(responses);
 }
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Listening on port ${port}...`));
+const port = process.env.PORT || 443;
+https
+  .createServer(options, app)
+  .listen(port, () => console.log(`Listening on port ${port}...`));
