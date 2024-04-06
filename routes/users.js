@@ -48,7 +48,14 @@ router.post("/register", async (req, res) => {
     if (existingUser) {
       console.log(existingUser);
       console.log("User with this email already exists");
-      return res.status(400).send("User with this email already exists");
+      return res.send({
+        name: existingUser.name,
+        lastName: existingUser.lastName,
+        email: existingUser.email,
+        uses: existingUser.uses,
+        used: existingUser.used,
+      });
+      // return res.status(400).send("User with this email already exists");
     }
     let user = new User({
       name: resData.given_name,
@@ -58,7 +65,14 @@ router.post("/register", async (req, res) => {
       used: 0,
     });
     user = await user.save();
-    res.send("Login verified");
+    res.send({
+      name: existingUser.name,
+      lastName: existingUser.lastName,
+      email: existingUser.email,
+      uses: existingUser.uses,
+      used: existingUser.used,
+    });
+    // res.send("Login verified");
   } catch (error) {
     console.error("Error verifying token:", error);
     res.status(401).send("Unauthorized");
@@ -84,8 +98,25 @@ router.post("/login", async (req, res) => {
 
     const existingUser = await User.findOne({ email: payload.email });
     if (!existingUser) {
-      console.log("User with this email does not exist");
-      return res.status(400).send("User with this email does not exist");
+      let user = new User({
+        name: payload.given_name,
+        lastName: payload.family_name,
+        email: payload.email,
+        uses: 0,
+        used: 0,
+      });
+      user = await user.save();
+
+      let newExistingUser = await User.findOne({ email: payload.email });
+      return res.send({
+        name: newExistingUser.name,
+        lastName: newExistingUser.lastName,
+        email: newExistingUser.email,
+        uses: newExistingUser.uses,
+        used: newExistingUser.used,
+      });
+      // console.log("User with this email does not exist");
+      // return res.status(400).send("User with this email does not exist");
     }
     res.send({
       name: existingUser.name,
