@@ -4,7 +4,7 @@ const path = require("path");
 const app = express();
 const cors = require("cors");
 const fs = require("fs");
-const users = require("./routes/users");
+const { router } = require("./routes/users");
 const mongoose = require("mongoose");
 const payments = require("./routes/payments");
 const session = require("express-session");
@@ -32,7 +32,7 @@ app.use(
 app.use(cors());
 app.use("/api/payments", webhooks);
 app.use(express.json());
-app.use("/api/users", users);
+app.use("/api/users", router);
 app.use("/api/payments", payments);
 
 const OpenAI = require("openai");

@@ -1,10 +1,12 @@
 require("dotenv").config();
 const express = require("express");
 const router = express.Router();
-const mongoose = require("mongoose");
 const cors = require("cors");
+const mongoose = require("mongoose");
 const endpointSecret =
   "whsec_99d28ef427ed443f2a1f54cd68f5e5333d780ddae51fc5c83eab568f40c8775a";
+
+const { User } = require("./users");
 
 router.use(cors());
 router.use("/webhook", express.raw({ type: "application/json" }));
@@ -33,6 +35,30 @@ router.post("/webhook", async (req, res) => {
     // ... handle other event types
     case "checkout.session.completed":
       console.log("User should be credited with 5 credits");
+      try {
+        const user = await User.findOne({
+          email: event.data.object.metadata.email,
+        });
+        console.log("found one with email " + event.data.object.metadata.email);
+
+        const id = event.data.object.metadata.item;
+        console.log("id is " + id);
+
+        if (user && id === "1") {
+          await User.updateOne({ $inc: { uses: 1 } });
+        }
+        if (user && id === "2") {
+          await User.updateOne({ $inc: { uses: 5 } });
+        }
+        if (user && id === "3") {
+          await User.updateOne({ $inc: { uses: 15 } });
+        }
+
+        // Continue processing here
+      } catch (err) {
+        console.error(err);
+        res.status(500).send("Server Error");
+      }
     default:
       console.log(`Unhandled event type ${event.type}`);
   }
