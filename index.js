@@ -11,16 +11,16 @@ const session = require("express-session");
 const webhooks = require("./routes/webhooks");
 // "mongodb://localhost:27017/chapter-one"
 const verifyGoogleToken = require("./middleware/auth");
-const https = require("https");
+// const https = require("https");
 
-const options = {
-  key: fs.readFileSync(
-    "/etc/letsencrypt/live/chapteroneai.com-0001/privkey.pem"
-  ),
-  cert: fs.readFileSync(
-    "/etc/letsencrypt/live/chapteroneai.com-0001/fullchain.pem"
-  ),
-};
+// const options = {
+//   key: fs.readFileSync(
+//     "/etc/letsencrypt/live/chapteroneai.com-0001/privkey.pem"
+//   ),
+//   cert: fs.readFileSync(
+//     "/etc/letsencrypt/live/chapteroneai.com-0001/fullchain.pem"
+//   ),
+// };
 
 mongoose
   .connect(process.env.MONGO_CONNECTION_STRING, {})
@@ -128,7 +128,7 @@ async function getReview(text, res) {
 }
 
 const port = process.env.PORT || 3000;
-https
-  .createServer(options, app)
-  .listen(port, () => console.log(`Listening on port ${port}...`));
-// app.listen(port, () => console.log(`Listening on port ${port}...`));
+// https
+//   .createServer(options, app)
+//   .listen(port, () => console.log(`Listening on port ${port}...`));
+app.listen(port, () => console.log(`Listening on port ${port}...`));
