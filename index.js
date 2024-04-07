@@ -14,8 +14,12 @@ const verifyGoogleToken = require("./middleware/auth");
 const https = require("https");
 
 const options = {
-  key: fs.readFileSync("/etc/ssl/chapteroneai.com.key"),
-  cert: fs.readFileSync("/etc/ssl/chapteroneai.com.pem"),
+  key: fs.readFileSync(
+    "/etc/letsencrypt/live/chapteroneai.com-0001/privkey.pem"
+  ),
+  cert: fs.readFileSync(
+    "/etc/letsencrypt/live/chapteroneai.com-0001/fullchain.pem"
+  ),
 };
 
 mongoose
@@ -127,3 +131,4 @@ const port = process.env.PORT || 3000;
 https
   .createServer(options, app)
   .listen(port, () => console.log(`Listening on port ${port}...`));
+// app.listen(port, () => console.log(`Listening on port ${port}...`));
