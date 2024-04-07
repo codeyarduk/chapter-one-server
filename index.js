@@ -123,7 +123,7 @@ async function getReview(text, res) {
   res.send(responses);
 }
 
-const port = process.env.PORT || 443;
+const port = process.env.PORT || 3000;
 https
   .createServer(options, app)
   .listen(port, () => console.log(`Listening on port ${port}...`));
