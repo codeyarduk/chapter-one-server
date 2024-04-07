@@ -11,13 +11,15 @@ const session = require("express-session");
 const webhooks = require("./routes/webhooks");
 // "mongodb://localhost:27017/chapter-one"
 const verifyGoogleToken = require("./middleware/auth");
+const https = require("https");
+
+const options = {
+  key: fs.readFileSync("/etc/ssl/chapteroneai.com.key"),
+  cert: fs.readFileSync("/etc/ssl/chapteroneai.com.pem"),
+};
 
 mongoose
-  .connect(process.env.MONGO_CONNECTION_STRING, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    // dnsSeedlist: false,
-  })
+  .connect(process.env.MONGO_CONNECTION_STRING, {})
   .then(() => console.log("Connected to MongoDB..."))
   .catch((err) => console.log(err));
 
@@ -121,5 +123,7 @@ async function getReview(text, res) {
   res.send(responses);
 }
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Listening on port ${port}...`));
+const port = process.env.PORT || 443;
+https
+  .createServer(options, app)
+  .listen(port, () => console.log(`Listening on port ${port}...`));
