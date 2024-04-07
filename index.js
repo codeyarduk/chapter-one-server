@@ -14,8 +14,8 @@ const verifyGoogleToken = require("./middleware/auth");
 const https = require("https");
 
 const options = {
-  key: fs.readFileSync("./secret/chapteroneai.com.key"),
-  cert: fs.readFileSync("./secret/chapteroneai.com.pem"),
+  key: fs.readFileSync("/etc/ssl/chapteroneai.com.key"),
+  cert: fs.readFileSync("/etc/ssl/chapteroneai.com.pem"),
 };
 
 mongoose
