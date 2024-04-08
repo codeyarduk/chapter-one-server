@@ -62,7 +62,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.post(
-  "/upload",
+  "api/upload",
   verifyGoogleToken,
   upload.single("file"),
   async (req, res) => {
