@@ -98,8 +98,8 @@ async function getReview(text, res) {
 
   let queries = {
     ats_formatting:
-      "do you think that this is following standard formatting for ats? please make your response plain text ONLY" +
-      text,
+      "say hello", 
+      // text,
     query2: "say bye",
     // ...
   };
