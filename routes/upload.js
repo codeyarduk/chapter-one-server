@@ -43,6 +43,7 @@ router.post("/", verifyGoogleToken, upload.single("file"), async (req, res) => {
     });
     if (user.uses === 0) {
       res.status(400).send("No uses left");
+      return;
     }
   } catch (err) {
     console.error(err);
@@ -110,7 +111,7 @@ async function getReview(text, basePrompt, email, res) {
             content: queries[query],
           },
         ],
-        model: "gpt-3.5-turbo",
+        model: "gpt-4",
       });
       console.log(result.usage);
       responses[query] = result.choices[0]?.message.content || "";
