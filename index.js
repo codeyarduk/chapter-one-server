@@ -64,30 +64,33 @@ const upload = multer({ storage: storage });
 app.post(
   "api/upload",
   verifyGoogleToken,
-  upload.single("file"),
+
+  // upload.single("file"),
+
   async (req, res) => {
     // console.log(req.headers.authorization);
 
-    console.log(req.file);
-    const filePath = "uploads/" + req.file.filename;
-    const text = await pdf2html.text("uploads/" + req.file.filename);
-    //   const review = await getReview(text);
-    await getReview(text, res);
-    //   console.log(text);
-    //   res.send(review);
+    // console.log(req.file);
+    // const filePath = "uploads/" + req.file.filename;
+    // const text = await pdf2html.text("uploads/" + req.file.filename);
+
+    // await getReview(text, res);
+
+    await getReview(res);
 
     // Delete file after sending response
-    fs.unlink(filePath, (err) => {
-      if (err) {
-        console.error("Error deleting file:", err);
-      } else {
-        console.log("File deleted:", filePath);
-      }
-    });
+
+    //   fs.unlink(filePath, (err) => {
+    //     if (err) {
+    //       console.error("Error deleting file:", err);
+    //     } else {
+    //       console.log("File deleted:", filePath);
+    //     }
+    //   });
   }
 );
 
-async function getReview(text, res) {
+async function getReview(res) {
   // const completion = await openai.chat.completions.create({
   //   messages: [{ role: "user", content: "give me a response of 3 words ONLY" }],
   //   model: "gpt-3.5-turbo",
@@ -97,9 +100,8 @@ async function getReview(text, res) {
   // res.send(completion.choices[0].message.content);
 
   let queries = {
-    ats_formatting:
-      "say hello", 
-      // text,
+    ats_formatting: "say hello",
+    // text,
     query2: "say bye",
     // ...
   };
