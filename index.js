@@ -122,6 +122,7 @@ async function getReview(res) {
       // console.log(result.choices[0]?.message);
       responses[query] = result.choices[0]?.message.content || "";
     } catch (error) {
+      res.send(error);
       console.error(`Error creating chat completion for ${query}:`, error);
     }
   }
