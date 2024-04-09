@@ -46,8 +46,8 @@ router.post("/create-checkout-session", async (req, res) => {
         email: email,
         item: req.body.item.id,
       },
-      success_url: "chapteroneai.com/profile",
-      cancel_url: "chapteroneai.com/",
+      success_url: `${process.env.CLIENT_URL}/profile`,
+      cancel_url: `${process.env.CLIENT_URL}/`,
     });
     res.json({ url: session.url });
   } catch (error) {

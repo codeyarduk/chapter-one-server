@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema(
     email: String,
     uses: Number,
     used: Number,
+    reviews: Array,
   },
   { collection: "users" }
 );
@@ -63,6 +64,7 @@ router.post("/register", async (req, res) => {
       email: resData.email,
       uses: 0,
       used: 0,
+      reviews: [],
     });
     user = await user.save();
     const newExistingUser = await User.findOne({ email: resData.email });
@@ -72,6 +74,7 @@ router.post("/register", async (req, res) => {
       email: newExistingUser.email,
       uses: newExistingUser.uses,
       used: newExistingUser.used,
+      reviews: newExistingUser.reviews,
     });
     // res.send("Login verified");
   } catch (error) {
@@ -154,12 +157,13 @@ router.post("/uses/:email", async (req, res) => {
       console.log("User with this email does not exist");
       res.status(400).send("User with this email does not exist");
     } else {
-      console.log(existingUser);
+      // console.log(existingUser);
       res.send({
         name: existingUser.name,
         lastName: existingUser.lastName,
         email: existingUser.email,
         uses: existingUser.uses,
+        used: existingUser.used,
       });
     }
   } catch (error) {
