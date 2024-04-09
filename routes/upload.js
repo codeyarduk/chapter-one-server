@@ -5,6 +5,7 @@ const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
 const jwtDecode = require("jwt-decode");
+const uuid = require("uuid");
 
 const OpenAI = require("openai");
 const pdf2html = require("pdf2html");
@@ -121,24 +122,45 @@ async function getReview(text, basePrompt, email, res) {
     }
   });
 
-  if (resolved) {
-    try {
-      await User.updateOne({ email: email }, { $inc: { uses: -1 } });
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Server Error");
-    }
-  }
-
   Promise.all(promises)
     .then(() => {
       res.send(responses);
+      let date = new Date();
+      let dateString = date.toISOString().split("T")[0];
+      const returnObject = {
+        id: uuid.v4(),
+        date: dateString,
+        review: responses,
+      };
+      addReview(returnObject);
       // All API calls are done here
     })
     .catch((error) => {
       // Handle any error that occurred during any of the API calls
       res.send(error);
     });
+
+  const addReview = async (returnObject) => {
+    try {
+      await User.updateOne(
+        { email: email },
+        { $push: { reviews: returnObject } }
+      );
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Server Error");
+    }
+  };
+
+  if (resolved) {
+    try {
+      await User.updateOne({ email: email }, { $inc: { uses: -1 } });
+      await User.updateOne({ email: email }, { $inc: { used: +1 } });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Server Error");
+    }
+  }
 
   //   for (let query in queries) {
   //     try {

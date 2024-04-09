@@ -10,6 +10,7 @@ const payments = require("./routes/payments");
 const session = require("express-session");
 const webhooks = require("./routes/webhooks");
 const getUploads = require("./routes/upload");
+const reviews = require("./routes/reviews");
 
 mongoose
   .connect(process.env.MONGO_CONNECTION_STRING, {})
@@ -30,6 +31,7 @@ app.use(express.json());
 app.use("/api/users", router);
 app.use("/api/payments", payments);
 app.use("/api/upload", getUploads);
+app.use("/api/reviews", reviews);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
