@@ -5,24 +5,23 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 
-const endpointSecret =
-  "whsec_99d28ef427ed443f2a1f54cd68f5e5333d780ddae51fc5c83eab568f40c8775a";
+const endpointSecret = "whsec_CLUh1pivkJQnbV8RlwR6g1S6pZoitNS8";
 
 router.use(cors());
 router.use(express.json());
 const stripe = require("stripe")(
-  "sk_test_51P1SybBVg7XYyapkqlY6AWWVRzwFS5HHPzsjM48WNlWG8mc8W3koeTyyeWLNPpH1V33wSq6rzt5pYhKtbjrq996Y00aUleJseT"
+  "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"
 );
 
 const storeItems = new Map([
-  [1, { price_id: "price_1P2JGvBVg7XYyapkZMw1qn0c", name: "Basic", tokens: 1 }],
+  [1, { price_id: "price_1P3hB2BVg7XYyapkEtYaSNzx", name: "Basic", tokens: 1 }],
   [
     2,
-    { price_id: "price_1P2JFZBVg7XYyapkFALQCSNw", name: "Standard", tokens: 5 },
+    { price_id: "price_1P3hB5BVg7XYyapknc8FU0q8", name: "Standard", tokens: 2 },
   ],
   [
     3,
-    { price_id: "price_1P1T8YBVg7XYyapkulFsFHk2", name: "Premium", tokens: 15 },
+    { price_id: "price_1P3hB6BVg7XYyapkpneGUcSx", name: "Premium", tokens: 5 },
   ],
 ]);
 

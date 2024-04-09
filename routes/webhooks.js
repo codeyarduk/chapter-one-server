@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 const endpointSecret =
   // whsec_CtZQCK2VbZGB1AI0AOdVtNbp9I0nZui4
 
-  "whsec_CtZQCK2VbZGB1AI0AOdVtNbp9I0nZui4";
+  "we_1P3hKWBVg7XYyapke3gcaK5Z";
 
 const { User } = require("./users");
 
@@ -14,7 +14,7 @@ router.use(cors());
 router.use("/webhook", express.raw({ type: "application/json" }));
 
 const stripe = require("stripe")(
-  "sk_test_51P1SybBVg7XYyapkqlY6AWWVRzwFS5HHPzsjM48WNlWG8mc8W3koeTyyeWLNPpH1V33wSq6rzt5pYhKtbjrq996Y00aUleJseT"
+  "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"
 );
 
 router.post("/webhook", async (req, res) => {
@@ -51,10 +51,10 @@ router.post("/webhook", async (req, res) => {
           await User.updateOne({ email: email }, { $inc: { uses: 1 } });
         }
         if (user && id === "2") {
-          await User.updateOne({ email: email }, { $inc: { uses: 5 } });
+          await User.updateOne({ email: email }, { $inc: { uses: 2 } });
         }
         if (user && id === "3") {
-          await User.updateOne({ email: email }, { $inc: { uses: 15 } });
+          await User.updateOne({ email: email }, { $inc: { uses: 5 } });
         }
 
         // Continue processing here
