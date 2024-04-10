@@ -51,7 +51,16 @@ router.post("/", verifyGoogleToken, upload.single("file"), async (req, res) => {
     res.status(500).send("Server Error");
   }
 
-  const basePrompt = `RETURN PLAIN TEXT ONLY WITH NO STYLING DO NOT USE ANY MARK DOWN OF ANY KIND! Keep your answer to no more than 55 words, and dont add a title. Use simpler language. Please talk as if you are talking to the candidate with a friendly tone, but don't use their name just keep it factual. This candidate is applying for this job: ${req.body.jobTitle} use this information to help guide your feedback. DO NOT START SENTENCES LIKE "HI" or "YES" DO START WITH "YOUR" or "THIS". DO NOT END SENTENCES WITH AFFIRMATIONS DIRECTED AT THE CANDIDATE LIKE "Good luck" or "good job"`;
+  // Defining the base prompt
+  const basePrompt = `This is the structure prompt to use for each heading:
+Output exactly 55 words for each heading prompt, and don’t add a title. Use simpler language.
+Please talk as if you are talking to me as the candidate. I'm giving you 6 prompts, I want you to replace the prompt under each heading with the respective output. Keep the format, use plain text. In the output, please don't include the headings, just use a line break. Do's: Keep each one of the 6 to 100 words each. Keep the total response to above 500 words, evenly split between all of the headings. Dont's:Don't respond to the prompt with language like "Yes, xyz" rather use "Your headings are good"`;
+
+  // Defining the prompts for each specific section
+  const formattingPrompts = ``;
+  const goalAlignmentPrompts = ``;
+  const keywordPromts = ``;
+
   const baseRatingPrompt = `I'm applying to a job as a ${req.body.jobTitle}, please rate this resume on a scale of 1 to 100 `;
   const job = req.body.jobTitle;
   console.log(req.file);
@@ -72,7 +81,23 @@ router.post("/", verifyGoogleToken, upload.single("file"), async (req, res) => {
   });
 });
 
-async function getReview(text, basePrompt, baseRatingPrompt, job, email, res) {
+async function getReview(
+  text,
+  basePrompt,
+  baseRatingPrompt,
+  formattingPrompts,
+  goalAlignmentPrompts,
+  keywordPromts,
+  job,
+  email,
+  res,
+) {
+  let threePrompts = {
+    prompt1: `${text} ${formattingPrompts} ${basePrompt}`,
+    prompt2: `${text} ${goalAlignmentPrompts} ${basePrompt}`,
+    prompt3: `${text} ${keywordPromts} ${basePrompt}`,
+  };
+
   let queries = {
     // FORMATTING
     formatting_rating: `${text}  Based on the formatting and structure of this resume I want you to rate how good the formatting and structure is on a scale of 1 to 100. With 1 being very bad formatting and 100 meaning its perfect and needs no further improvements. Only output a numerical number between 1 and 100. Do's: Output a numerical number between 1 and 100, Dont's: Don't use markdown formatting, Don't output anything other than the number.`,
