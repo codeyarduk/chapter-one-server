@@ -53,13 +53,13 @@ router.post("/", verifyGoogleToken, upload.single("file"), async (req, res) => {
 
   // Defining the base prompt
   const basePrompt = `This is the structure prompt to use for each heading:
-Output exactly 55 words for each heading prompt, and don’t add a title. Use simpler language.
-Please talk as if you are talking to me as the candidate. I'm giving you 6 prompts, I want you to replace the prompt under each heading with the respective output. Keep the format, use plain text. In the output, please don't include the headings, just use a line break. Do's: Keep each one of the 6 to 100 words each. Keep the total response to above 500 words, evenly split between all of the headings. Dont's:Don't respond to the prompt with language like "Yes, xyz" rather use "Your headings are good"`;
+  Output exactly 55 words for each heading prompt, and don’t add a title. Use simpler language.
+  Please talk as if you are talking to me as the candidate. I'm giving you 6 prompts, I want you to replace the prompt under each heading with the respective output. Keep the format, use plain text. In the output, please don't include the headings, just use a line break. Do's: Keep each one of the 6 to 100 words each. Keep the total response to above 500 words, evenly split between all of the headings. Dont's:Don't respond to the prompt with language like "Yes, xyz" rather use "Your headings are good"`;
 
   // Defining the prompts for each specific section
-  const formattingPrompts = ``;
+  const formattingPrompts = `test`;
   const goalAlignmentPrompts = ``;
-  const keywordPromts = ``;
+  const keywordPrompts = ``;
 
   const baseRatingPrompt = `I'm applying to a job as a ${req.body.jobTitle}, please rate this resume on a scale of 1 to 100 `;
   const job = req.body.jobTitle;
@@ -67,7 +67,17 @@ Please talk as if you are talking to me as the candidate. I'm giving you 6 promp
   const filePath = "uploads/" + req.file.filename;
   const text = await pdf2html.text("uploads/" + req.file.filename);
   //   const review = await getReview(text);
-  await getReview(text, basePrompt, baseRatingPrompt, job, email, res);
+  await getReview(
+    text,
+    basePrompt,
+    baseRatingPrompt,
+    formattingPrompts,
+    goalAlignmentPrompts,
+    keywordPrompts,
+    job,
+    email,
+    res,
+  );
   //   console.log(text);
   //   res.send(review);
 
@@ -87,46 +97,48 @@ async function getReview(
   baseRatingPrompt,
   formattingPrompts,
   goalAlignmentPrompts,
-  keywordPromts,
+  keywordPrompts,
   job,
   email,
   res,
 ) {
-  let threePrompts = {
-    prompt1: `${text} ${formattingPrompts} ${basePrompt}`,
-    prompt2: `${text} ${goalAlignmentPrompts} ${basePrompt}`,
-    prompt3: `${text} ${keywordPromts} ${basePrompt}`,
+  let queries = {
+    formatting: `${text} ${formattingPrompts} ${basePrompt}`,
+    goalAlignment: `${text} ${goalAlignmentPrompts} ${basePrompt}`,
+    keywords: `${text} ${keywordPrompts} ${basePrompt}`,
+    formatting_rating: `${text} Based on the formatting and structure of this resume I want you to rate how good the formatting and structure is on a scale of 1 to 100. With 1 being very bad formatting and 100 meaning its perfect and needs no further improvements. Only output a numerical number between 1 and 100. Do's: Output a numerical number between 1 and 100, Dont's: Don't use markdown formatting, Don't output anything other than the number.`,
+    goal_alignment_rating: `${text} Based on the goals of getting a job as a ${job} I want you to rate how much you think this resume aligns with my goal on a scale of 1 to 100. With 1 being resume content and experience has nothing to do with my goal job as a ${job} and 100 meaning my experience and education align perfectly and I don't need to make any other improvements. Only output a numerical number between 1 and 100. Do's: Output a numerical number between 1 and 100, Dont's: Don't use markdown formatting, Don't output anything other than the number.`,
+    key_word_rating: `${text} Based on the goals of getting a job as a ${job} I want you to rate how good my use of keywords are and how compatible the resume is with ATS on a scale of 1 to 100. With 1 being no ATS compatibility and keywords have nothing to do with my goal job as a ${job}, with 100 meaning the resume is fully ATS compatible and the keywords align perfectly for my desired job and I don't have to make any other improvements. Only output a numerical number between 1 and 100. Do's: Output a numerical number between 1 and 100, Dont's: Don't use markdown formatting, Don't output anything other than the number.`,
   };
 
-  let queries = {
+  let output = {
     // FORMATTING
-    formatting_rating: `${text}  Based on the formatting and structure of this resume I want you to rate how good the formatting and structure is on a scale of 1 to 100. With 1 being very bad formatting and 100 meaning its perfect and needs no further improvements. Only output a numerical number between 1 and 100. Do's: Output a numerical number between 1 and 100, Dont's: Don't use markdown formatting, Don't output anything other than the number.`,
-    distinct_section_headings: `${text} Can you outline how I can improve the section headings in my resume, to  make my resume better? If my resume aligns with my goal job, in terms of  the headings used, tell me I've done a good job and that no further  improvement is needed ${basePrompt}`,
-    logical_section_flow: `${text} Outline the section flow of my resume, focus on making sure it's logical and optimized for my goal job/industry. ${basePrompt} `,
-    separation_of_past_work_experience: `${text}Outline whether the experience section of the resume is set out  correctly, clearly outlining each role in the correct order of  importance and relevancy in relation to the goal job/industry ${basePrompt}  `,
-    skill_categorization: `${text}Outline whether the skills are grouped in a way that makes it easy  to identify areas of expertise, such as technical skills, languages, and  soft skills. Each category should be clearly labeled with a subheading. ${basePrompt} `,
-    clarity_in_educational_background: `${text} Give me an outline of whether the educational section is organized with  clear demarcations between different qualifications, including the  degree obtained if it exists the institution attended etc, and  graduation dates. ${basePrompt} `,
-    additional_sections: `${text}Please take into account the goal job/job being applied for and note any additional sections that are usually in a resume in this field that are not present in this resume and make a suggestion on which possible sections could be added or cut depending on which are needed. ${basePrompt} `,
+    formatting_rating: 0,
+    distinct_section_headings: 0,
+    logical_section_flow: 0,
+    separation_of_past_work_experience: 0,
+    skill_categorization: 0,
+    clarity_in_educational_background: 0,
+    additional_sections: 0,
     // GOAL ALIGNMENT
-    goal_alignment_rating: `${text} Based on the goals of getting a job as a ${job}  I want you to rate how much you think this resume aligns with my goal on a scale of 1 to 100. With 1 being resume content and experience has nothing to do with my goal job as a ${job} and 100 meaning my experience and education align perfectly and I don't need to make any other improvements. Only output a numerical number between 1 and 100. Do's: Output a numerical number between 1 and 100, Dont's: Don't use markdown formatting, Don't output anything other than the number.`,
-    your_given_career_objective: `${text} Does this resume include a section about the career objective? The  section should be a concise statement or summary at the beginning  of  the resume that clearly articulates the candidates career goals and how  they  align with the role they are applying for. Tailor this section to  reflect  the specific job and company, indicating how the candidates  skills, experience,  and aspirations make them a perfect fit. If no  career objective section is found, please give me instructions on how to  add one ${basePrompt} `,
-    relevant_work_experience: ` ${text}is there any other work experience I should have? ${basePrompt} `,
-    skills_section_tailored_to_the_job: `${text}Outline whether  the resume corrrectly list skills that are most relevant to your goal  job. This could include  technical skills, software proficiencies,  languages, or soft skills  like leadership and communication. Ensure  these skills match those  listed in the job description or are known to  be valued in your target  industry. I am running other prompts for  project work and experience, keep your answer on only the skills. ${basePrompt} `,
-    education_and_continuous_learning: `${text} If the goal job requires specific educational qualifications or values   continuous learning, make sure the resume education section highlights  any relevant degrees, certifications, and any ongoing or recent  professional development courses that align with the candidates career  aspirations. ${basePrompt} `,
-    projects_and_portfolio: `${text} If applicable, check if the candidate should include a section about  projects and portfolio, such as if they are a freelancer etc, or if  projects are required for their job, advise the best course of action on  their specific situation. ${basePrompt} `,
-    volunteer_work_and_extracurricular_activities: `check if the candidate should Include volunteer experiences, leadership  roles in clubs or  organizations. Advise them on including any that they  currently have, else congratulate them on existing ones. Focus only on  volunteer work or club roles, don't look at anything else in the resume ${basePrompt} `,
-    // Keyword optimisation and ats compatibility
-    key_word_rating: `${text} Based on the goals of getting a job as a ${job}  I want you to rate how good my use of keywords are and how compatible the resume is with ATS on a scale of 1 to 100. With 1 being no ATS compatibility and keywords have nothing to do with my goal job as a ${job}, with 100 meaning the resume is fully ATS compatible and the keywords align perfectly for my desired job and I don't have to make any other improvements. Only output a numerical number between 1 and 100. Do's: Output a numerical number between 1 and 100, Dont's: Don't use markdown formatting, Don't output anything other than the number.`,
-    job_description_alignment: `${text}Specifically look at whether the resume is tailored to include keywords  and phrases that match the job  description. This involves a careful  selection of skills,  qualifications, and experiences that are directly  mentioned or implied  in the job listing. Use the exact language where  appropriate. Optimise these keywords for ATS systems, and then give me  your 3 best imrpovement suggestions, when taking into account the goal  job ${basePrompt} `,
-    skills_section_optimization: `${text} Check for me whether the skills section of my resume is optimised for  ATS compatibility and give me tips on how to optimise it further. ${basePrompt} `,
-    professional_experience_keyword_integration: `${text} Look at the experience section of the resume and check if I have used  keywords that are actionable and are ATS optimised, then give me tips on  how to improve it further or how to start if I haven't done so already ${basePrompt} `,
-    education_and_certifications: `${text} Check whether I have included in my certifications, the full title as  well as any common  abbreviations, as some ATS systems may search for  either. Then give me tips to improve the ats compatability of the  certifications listed ${basePrompt} `,
-    standard_formatting_for_ats: `${text} now check my whole resume for a minimal ats layout and formatting, tell  me to remove anything that I shouldn't have in it for optimal  compatibility. Don't talk about keywords, look at the resume of the  candidate that I gave you ${basePrompt} `,
-    file_format_and_naming_conventions: `${text} give me some useful ats tips on file formatting and naming conventions ${basePrompt} `,
+    goal_alignment_rating: 0,
+    your_given_career_objective: 0,
+    relevant_work_experience: 0,
+    skills_section_tailored_to_the_job: 0,
+    education_and_continuous_learning: 0,
+    projects_and_portfolio: 0,
+    volunteer_work_and_extracurricular_activities: 0,
+    // KEYWORD OPTIMIZATION AND ATS COMPATIBILITY
+    key_word_rating: 0,
+    job_description_alignment: 0,
+    skills_section_optimization: 0,
+    professional_experience_keyword_integration: 0,
+    education_and_certifications: 0,
+    standard_formatting_for_ats: 0,
+    file_format_and_naming_conventions: 0,
   };
 
   let responses = {};
-
   let resolved = true;
 
   let promises = Object.keys(queries).map(async (query) => {
@@ -138,12 +150,32 @@ async function getReview(
             content: queries[query],
           },
         ],
-        model: "gpt-3.5-turbo-0125",
-        // model: "gpt-4-turbo",
+        model: "gpt-3.5-turbo",
+        temperature: 0.1,
       });
-      console.log(result.usage);
-      console.log(result.choices[0]?.message.content);
-      responses[query] = result.choices[0]?.message.content || "";
+
+      let responseText = result.choices[0]?.message.content || "";
+      responses[query] = responseText;
+
+      // Split the response by new lines and filter out any empty lines
+      let paragraphs = responseText
+        .split("\n")
+        .filter((paragraph) => paragraph.trim() !== "");
+
+      // For rating queries, simply assign the value
+      if (query.includes("_rating")) {
+        output[query] = parseFloat(paragraphs[0]) || 0;
+      } else {
+        // For other queries, map each paragraph to the corresponding property in the output object
+        paragraphs.forEach((paragraph, index) => {
+          let propertyKey = Object.keys(output).find(
+            (key, idx) => key.startsWith(query) && idx === index,
+          );
+          if (propertyKey) {
+            output[propertyKey] = paragraph;
+          }
+        });
+      }
     } catch (error) {
       console.error(`Error creating chat completion for ${query}:`, error);
       resolved = false;
@@ -152,20 +184,19 @@ async function getReview(
 
   Promise.all(promises)
     .then(() => {
-      res.send(responses);
+      res.send(output); // Send the formatted output instead of the raw responses
       let date = new Date();
       let dateString = date.toISOString().split("T")[0];
       const returnObject = {
         id: uuid.v4(),
         date: dateString,
-        review: responses,
+        review: output, // Use the formatted output for the review
       };
       addReview(returnObject);
-      // All API calls are done here
     })
     .catch((error) => {
-      // Handle any error that occurred during any of the API calls
-      res.send(error);
+      console.error("Error in Promise.all: ", error);
+      res.status(500).send("An error occurred processing your review.");
     });
 
   const addReview = async (returnObject) => {
