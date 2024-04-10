@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     cb(
       null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname),
     );
   },
 });
@@ -113,8 +113,8 @@ async function getReview(text, basePrompt, baseRatingPrompt, job, email, res) {
             content: queries[query],
           },
         ],
-        // model: "gpt-3.5-turbo",
-        model: "gpt-4",
+        model: "gpt-3.5-turbo-0125",
+        // model: "gpt-4-turbo",
       });
       console.log(result.usage);
       console.log(result.choices[0]?.message.content);
@@ -147,7 +147,7 @@ async function getReview(text, basePrompt, baseRatingPrompt, job, email, res) {
     try {
       await User.updateOne(
         { email: email },
-        { $push: { reviews: returnObject } }
+        { $push: { reviews: returnObject } },
       );
     } catch (err) {
       console.error(err);
