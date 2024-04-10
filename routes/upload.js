@@ -54,7 +54,7 @@ router.post("/", verifyGoogleToken, upload.single("file"), async (req, res) => {
   // Defining the base prompt
   const basePrompt = `This is the structure prompt to use for each heading:
   Output exactly 55 words for each heading prompt, and don’t add a title. Use simpler language.
-  Please talk as if you are talking to me as the candidate. I'm giving you 6 prompts, I want you to replace the prompt under each heading with the respective output. Keep the format, use plain text. In the output, please don't include the headings, just use a line break. Do's: Keep each one of the 6 to 100 words each. Keep the total response to above 500 words, evenly split between all of the headings. Dont's:Don't respond to the prompt with language like "Yes, xyz" rather use "Your headings are good"`;
+  Please talk as if you are talking to me as the candidate. I'm giving you 6 prompts, I want you to replace the prompt under each heading with the respective output. Keep the format, use plain text. In the output, please don't include the headings, just use a line break. Do's: Keep each one of the 6 to 100 words each. Keep the total response to above 500 words, evenly split between all of the headings. Keep the line between each paragraph to a single /n Dont's:Don't respond to the prompt with language like "Yes, xyz" rather use "Your headings are good"`;
 
   // Defining the prompts for each specific section
   const formattingPrompts = `Distinct Section Headings:
