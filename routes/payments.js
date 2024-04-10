@@ -14,7 +14,7 @@ const stripe = require("stripe")(
 );
 
 const storeItems = new Map([
-  [1, { price_id: "price_1P3hB2BVg7XYyapkEtYaSNzx", name: "Basic", tokens: 1 }],
+  [1, { price_id: "price_1P3hB5BVg7XYyapknc8FU0q8", name: "Basic", tokens: 1 }],
   [
     2,
     { price_id: "price_1P3hB5BVg7XYyapknc8FU0q8", name: "Standard", tokens: 2 },

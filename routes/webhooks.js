@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 const endpointSecret =
   // whsec_CtZQCK2VbZGB1AI0AOdVtNbp9I0nZui4
 
-  "we_1P3hKWBVg7XYyapke3gcaK5Z";
+  "whsec_CLUh1pivkJQnbV8RlwR6g1S6pZoitNS8";
 
 const { User } = require("./users");
 
