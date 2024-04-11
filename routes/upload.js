@@ -114,7 +114,7 @@ async function getReview(text, basePrompt, baseRatingPrompt, job, email, res) {
           },
         ],
         // model: "gpt-3.5-turbo",
-        model: "gpt-4",
+        model: "gpt-4-turbo",
       });
       console.log(result.usage);
       console.log(result.choices[0]?.message.content);
