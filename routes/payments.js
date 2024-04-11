@@ -14,14 +14,14 @@ const stripe = require("stripe")(
 );
 
 const storeItems = new Map([
-  [1, { price_id: "price_1P3hB2BVg7XYyapkEtYaSNzx", name: "Basic", tokens: 1 }],
+  [1, { price_id: "price_1P4MpUBVg7XYyapkfigLDw9T", name: "Basic", tokens: 1 }],
   [
     2,
-    { price_id: "price_1P3ht5BVg7XYyapkdjGXFnhl", name: "Standard", tokens: 2 },
+    { price_id: "price_1P4Mr7BVg7XYyapkTlYoETRq", name: "Standard", tokens: 2 },
   ],
   [
     3,
-    { price_id: "price_1P3hB6BVg7XYyapkpneGUcSx", name: "Premium", tokens: 5 },
+    { price_id: "price_1P4Mx6BVg7XYyapkJOwXXS4i", name: "Premium", tokens: 5 },
   ],
 ]);
 
