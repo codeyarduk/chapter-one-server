@@ -20,11 +20,12 @@ const userSchema = new mongoose.Schema(
 
 const User = mongoose.model("User", userSchema);
 
-router.get("/", async (req, res) => {
-  const users = await User.find();
-  console.log(users);
-  res.send(users);
-});
+// DO NOT ALLOW ON PRODUCTION BUILDS
+// router.get("/", async (req, res) => {
+//   const users = await User.find();
+//   console.log(users);
+//   res.send(users);
+// });
 
 router.post("/register", async (req, res) => {
   console.log(jwtDecode.jwtDecode(req.body.user).email);
@@ -187,13 +188,16 @@ router.post("/uses/:email", async (req, res) => {
   //   }
 });
 
-router.delete("/:id", async (req, res) => {
-  const user = await User.findByIdAndDelete(req.params.id);
-  if (!user) {
-    return res.status(404).send("The user with the given ID was not found.");
-  }
-  res.send(user);
-});
+
+// SHOULD NEVER BE USED ON PRODUCTION BUILDS
+
+// router.delete("/:id", async (req, res) => {
+//   const user = await User.findByIdAndDelete(req.params.id);
+//   if (!user) {
+//     return res.status(404).send("The user with the given ID was not found.");
+//   }
+//   res.send(user);
+// });
 
 module.exports = {
   User: mongoose.model("User", userSchema),
