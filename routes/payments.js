@@ -17,7 +17,7 @@ const storeItems = new Map([
   [1, { price_id: "price_1P4MpUBVg7XYyapkfigLDw9T", name: "Basic", tokens: 1 }],
   [
     2,
-    { price_id: "price_1P4Mr7BVg7XYyapkTlYoETRq", name: "Standard", tokens: 2 },
+    { price_id: "price_1P4hJqBVg7XYyapko49hNtmk", name: "Standard", tokens: 1 },
   ],
   [
     3,
