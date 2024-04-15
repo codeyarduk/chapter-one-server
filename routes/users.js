@@ -85,7 +85,7 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  const token = req.body.user;
+  const token = req.headers.authorization;
 
   try {
     const ticket = await client.verifyIdToken({
@@ -187,7 +187,6 @@ router.post("/uses/:email", async (req, res) => {
   //     res.status(500).send("Server Error");
   //   }
 });
-
 
 // SHOULD NEVER BE USED ON PRODUCTION BUILDS
 

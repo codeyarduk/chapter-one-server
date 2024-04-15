@@ -21,7 +21,7 @@ router.post("/webhook", async (req, res) => {
   // /api/payments/webhook
   const sig = req.headers["stripe-signature"];
   let event;
-
+ 
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
   } catch (err) {
