@@ -4,7 +4,7 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-
+const jwtDecode = require("jwt-decode");
 const endpointSecret = "whsec_CLUh1pivkJQnbV8RlwR6g1S6pZoitNS8";
 
 router.use(cors());
@@ -27,8 +27,11 @@ const storeItems = new Map([
 
 router.post("/create-checkout-session", async (req, res) => {
   console.log(req.body);
-  const user = JSON.parse(req.body.token);
+  const user = jwtDecode.jwtDecode(req.headers.authorization);
+  console.log(user);
+  // const user = JSON.parse(req.body.token);
   const email = user.email;
+  console.log(email);
   try {
     const storeItem = storeItems.get(req.body.item.id);
     console.log(storeItem);

@@ -29,8 +29,8 @@ const User = mongoose.model("User", userSchema);
 
 router.post("/register", async (req, res) => {
   console.log(jwtDecode.jwtDecode(req.body.user).email);
-  const resData = jwtDecode.jwtDecode(req.body.user);
-  const token = req.body.user; // assuming you're sending the token in the request body
+  const resData = jwtDecode.jwtDecode(req.headers.authorization);
+  const token = req.headers.authorization; // assuming you're sending the token in the request body
 
   try {
     const ticket = await client.verifyIdToken({
@@ -85,7 +85,7 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  const token = req.body.user;
+  const token = req.headers.authorization;
 
   try {
     const ticket = await client.verifyIdToken({
@@ -136,9 +136,9 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/uses/:email", async (req, res) => {
-  const token = req.body.user;
-
+router.post("/uses", async (req, res) => {
+  // const token = req.body.user;
+  const token = req.headers.authorization;
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
@@ -149,16 +149,10 @@ router.post("/uses/:email", async (req, res) => {
     const payload = ticket.getPayload();
     const existingUser = await User.findOne({ email: payload.email });
 
-    if (payload.email !== req.params.email) {
-      return res.status(401).send("Unauthorized");
-    }
-    // console.log(payload);
-
     if (!existingUser) {
       console.log("User with this email does not exist");
       res.status(400).send("User with this email does not exist");
     } else {
-      // console.log(existingUser);
       res.send({
         name: existingUser.name,
         lastName: existingUser.lastName,
@@ -187,7 +181,6 @@ router.post("/uses/:email", async (req, res) => {
   //     res.status(500).send("Server Error");
   //   }
 });
-
 
 // SHOULD NEVER BE USED ON PRODUCTION BUILDS
 
