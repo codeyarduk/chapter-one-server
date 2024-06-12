@@ -20,13 +20,6 @@ const userSchema = new mongoose.Schema(
 
 const User = mongoose.model("User", userSchema);
 
-// DO NOT ALLOW ON PRODUCTION BUILDS
-// router.get("/", async (req, res) => {
-//   const users = await User.find();
-//   console.log(users);
-//   res.send(users);
-// });
-
 router.post("/register", async (req, res) => {
   console.log(jwtDecode.jwtDecode(req.body.user).email);
   const resData = jwtDecode.jwtDecode(req.headers.authorization);
@@ -165,32 +158,7 @@ router.post("/uses", async (req, res) => {
     console.error("Error verifying token:", error);
     res.status(401).send("Unauthorized");
   }
-
-  //   try {
-  //     const user = await User.findOne({ email: req.params.email });
-  //     if (!user) {
-  //       return res
-  //         .status(404)
-  //         .send("The user with the given email was not found.");
-  //     }
-  //     res.send({
-  //       uses: user.uses,
-  //     });
-  //   } catch (err) {
-  //     console.error(err);
-  //     res.status(500).send("Server Error");
-  //   }
 });
-
-// SHOULD NEVER BE USED ON PRODUCTION BUILDS
-
-// router.delete("/:id", async (req, res) => {
-//   const user = await User.findByIdAndDelete(req.params.id);
-//   if (!user) {
-//     return res.status(404).send("The user with the given ID was not found.");
-//   }
-//   res.send(user);
-// });
 
 module.exports = {
   User: mongoose.model("User", userSchema),

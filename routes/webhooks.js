@@ -3,25 +3,20 @@ const express = require("express");
 const router = express.Router();
 const cors = require("cors");
 const mongoose = require("mongoose");
-const endpointSecret =
-  // whsec_CtZQCK2VbZGB1AI0AOdVtNbp9I0nZui4
-
-  "whsec_CLUh1pivkJQnbV8RlwR6g1S6pZoitNS8";
+const endpointSecret = process.env.STRIPE_WEB_HOOK_SECRET;
 
 const { User } = require("./users");
 
 router.use(cors());
 router.use("/webhook", express.raw({ type: "application/json" }));
 
-const stripe = require("stripe")(
-  "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"
-);
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 router.post("/webhook", async (req, res) => {
   // /api/payments/webhook
   const sig = req.headers["stripe-signature"];
   let event;
- 
+
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
   } catch (err) {
