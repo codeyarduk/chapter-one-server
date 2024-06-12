@@ -5,13 +5,10 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const jwtDecode = require("jwt-decode");
-const endpointSecret = "whsec_CLUh1pivkJQnbV8RlwR6g1S6pZoitNS8";
 
 router.use(cors());
 router.use(express.json());
-const stripe = require("stripe")(
-  "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"
-);
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const storeItems = new Map([
   [1, { price_id: "price_1P4MpUBVg7XYyapkfigLDw9T", name: "Basic", tokens: 1 }],
@@ -26,12 +23,13 @@ const storeItems = new Map([
 ]);
 
 router.post("/create-checkout-session", async (req, res) => {
-  console.log(req.body);
+  console.log("HELLO");
+  console.log("req body: ", req.body);
   const user = jwtDecode.jwtDecode(req.headers.authorization);
-  console.log(user);
+  console.log("USER: ", user);
   // const user = JSON.parse(req.body.token);
   const email = user.email;
-  console.log(email);
+  console.log("EMAIL: ", email);
   try {
     const storeItem = storeItems.get(req.body.item.id);
     console.log(storeItem);

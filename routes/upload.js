@@ -31,10 +31,6 @@ const upload = multer({
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-router.get("/", async (req, res) => {
-  res.send("Hello Worldx");
-});
-
 router.post("/", verifyGoogleToken, upload.single("file"), async (req, res) => {
   console.log(req.headers.authorization);
 
@@ -167,27 +163,6 @@ async function getReview(text, basePrompt, baseRatingPrompt, job, email, res) {
       res.status(500).send("Server Error");
     }
   }
-
-  //   for (let query in queries) {
-  //     try {
-  //       let result = await openai.chat.completions.create({
-  //         messages: [
-  //           {
-  //             role: "user",
-  //             content: queries[query],
-  //           },
-  //         ],
-  //         model: "gpt-3.5-turbo",
-  //       });
-  //       // console.log(result.choices[0]?.message);
-  //       responses[query] = result.choices[0]?.message.content || "";
-  //     } catch (error) {
-  //       res.send(error);
-  //       console.error(`Error creating chat completion for ${query}:`, error);
-  //     }
-  //   }
-  //   console.log(responses);
-  //   res.send(responses);
 }
 
 module.exports = router;
