@@ -1,37 +1,46 @@
-const express = require("express");
-const multer = require("multer");
-const path = require("path");
-const app = express();
-const cors = require("cors");
-const fs = require("fs");
-const { router } = require("./routes/users");
-const mongoose = require("mongoose");
-const payments = require("./routes/payments");
-const session = require("express-session");
-const webhooks = require("./routes/webhooks");
-const getUploads = require("./routes/upload");
-const reviews = require("./routes/reviews");
+import { Hono } from "hono";
+import { logger } from "hono/logger";
+import { cors } from "hono/cors";
+import { csrf } from "hono/csrf";
+import { rateLimiterMiddleware } from "./middleware/rateLimiter";
+import { Context } from "hono";
 
-mongoose
-  .connect(process.env.MONGO_CONNECTION_STRING, {})
-  .then(() => console.log("Connected to MongoDB..."))
-  .catch((err) => console.log(err));
+import { router } from "./routes/users";
+import { payments } from "./routes/payments";
+import { webhooks } from "./routes/webhooks";
+import { getUploads } from "./routes/upload";
+import { reviews } from "./routes/reviews";
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true },
-  })
-);
-app.use(cors());
-app.use("/api/payments", webhooks);
-app.use(express.json());
-app.use("/api/users", router);
-app.use("/api/payments", payments);
-app.use("/api/upload", getUploads);
-app.use("/api/reviews", reviews);
+const app = new Hono();
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Listening on port ${port}...`));
+app.use("*", async (c, next) => {
+  cors({
+    origin: c.env.SITE_URL,
+    allowHeaders: [
+      "Content-Type",
+      "X-Custom-Header",
+      "Upgrade-Insecure-Requests",
+      "Access-Control-Allow-Origin",
+    ],
+    allowMethods: ["POST", "GET", "OPTIONS"],
+    exposeHeaders: ["Content-Length", "X-Kuma-Revision"],
+    maxAge: 600,
+    credentials: true,
+  });
+  console.log(c.env.SITE_URL);
+  await next();
+});
+
+app.use(logger());
+app.use("*", async (c, next) => {
+  csrf({ origin: c.env.SITE_URL });
+  await next();
+});
+app.use(rateLimiterMiddleware);
+app.route("/payments", webhooks);
+app.route("/users", router);
+app.route("/payments", payments);
+app.route("/upload", getUploads);
+app.route("/reviews", reviews);
+
+export default app;
